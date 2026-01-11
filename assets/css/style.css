@@ -1,4 +1,30 @@
-/* Default card styling (for grid view) */
+/* Buttons in Xbox green */
+.btn-load,
+.btn-reload {
+	background-color: #107C10;
+	border-color: #107C10;
+	color: #fff;
+}
+
+.btn-load:hover,
+.btn-reload:hover {
+	background-color: #0d5c0a;
+	border-color: #0d5c0a;
+	color: #fff;
+}
+
+/* Green spinner */
+.spinner-border.text-primary {
+	color: #107C10 !important;
+}
+
+/* Spinner size */
+.spinner-border {
+	width: 2rem;
+	height: 2rem;
+}
+
+/* Default card styling */
 #games-container .card {
 	margin: 0.5rem auto 0 auto; /* top margin + centered */
 }
@@ -55,24 +81,30 @@
 	gap: 0.5rem;
 }
 
-/* G circle */
+/* Achievement percentage */
+.achievement-percentage {
+	margin-left: auto;
+}
+
+/* Achievement G circle */
 .achievement-g {
+	display: inline-block;
 	width: 20px;
 	height: 20px;
+	line-height: 20px;
+	text-align: center;
+	background: #000;
+	color: #fff;
 	border-radius: 50%;
-	background-color: black;
-	color: white;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 0.75rem;
 	font-weight: bold;
+	font-size: 0.8rem;
+	margin-right: 0.25rem;
 }
 
 /* Trophy icon spacing */
 .achievement-trophy {
-	color: inherit;
-	font-size: 1rem;
+	margin-left: 0.5rem;
+	margin-right: 0.25rem;
 }
 
 /* Percentage text above progress bar, right-aligned */

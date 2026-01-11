@@ -1,3 +1,4 @@
 const config = {
-	'proxy_url': ''
+	'proxy_url': '',
+	'api_key': ''
 }
