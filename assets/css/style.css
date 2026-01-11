@@ -1,0 +1,81 @@
+/* Default card styling (for grid view) */
+#games-container .card {
+	margin: 0.5rem auto 0 auto; /* top margin + centered */
+}
+
+/* Only list view cards should have max-width */
+#games-container .card.list-view {
+	max-width: 60%;
+}
+
+/* List view: image on the left with text next to it */
+#games-container .card.list-view .list-view-container {
+	flex-direction: row !important;
+	align-items: center;
+}
+
+/* List view image */
+#games-container .card.list-view .list-img {
+	width: auto;
+	height: 150px;
+	object-fit: fill;
+	margin-right: 1rem;
+	border-radius: 6px;
+	box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Grid view: images on top, full width */
+#games-container .card:not(.list-view) .list-img {
+	width: 100%;
+	height: auto;
+	object-fit: contain;
+	margin-bottom: 0.5rem;
+}
+
+/* Grid view flex reset */
+#games-container .card:not(.list-view) .list-view-container {
+	flex-direction: column !important;
+}
+
+/* Xbox-style achievement display */
+#games-container .card .achievement-info {
+	margin-top: 0.5rem;
+}
+
+#games-container .card .achievement-info .progress {
+	margin-top: 2px;
+	height: 8px;
+	margin-bottom: 0.25rem;
+}
+
+/* Single line achievement row */
+.achievement-row {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+/* G circle */
+.achievement-g {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background-color: black;
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.75rem;
+	font-weight: bold;
+}
+
+/* Trophy icon spacing */
+.achievement-trophy {
+	color: inherit;
+	font-size: 1rem;
+}
+
+/* Percentage text above progress bar, right-aligned */
+.achievement-percentage {
+	margin-left: auto;
+}
