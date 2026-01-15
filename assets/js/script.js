@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	const reload_btn = document.getElementById('reload-btn');
 	const view_btn = document.getElementById('view-btn');
 
+	const save_btn = document.getElementById('save-btn');
+
 	const input_view = document.getElementById('input-view');
 	const games_view = document.getElementById('games-view');
 	const games_container = document.getElementById('games-container');
@@ -10,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const error_box = document.getElementById('error-box');
 	const error_text = document.getElementById('error-text');
 
+	let full_data = null;
 	let games_data = null;
 	let is_grid_view = false;
 
@@ -45,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			const data = await response.json();
 			if (!data.titles || !Array.isArray(data.titles)) throw new Error('Invalid JSON structure');
 
+			full_data = data;
 			games_data = data.titles;
 
 			render_games(games_data);
@@ -59,6 +63,27 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Event listeners
 	load_btn.addEventListener('click', fetch_games);
 	reload_btn.addEventListener('click', fetch_games);
+
+	// Save JSON when requested
+	const save_json = () => {
+		const data = full_data ? full_data : [];
+		const json = JSON.stringify(data, null, 2);
+		const iso = new Date().toISOString();
+		const filename = 'Xbox Achievements ' + formatDateUTC(iso).replace(/:/g, '-') + '.json';
+		const blob = new Blob([json], { type: 'application/json' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		a.remove();
+		URL.revokeObjectURL(url);
+	};
+
+	if (save_btn) {
+		save_btn.addEventListener('click', save_json);
+	}
 
 	view_btn.addEventListener('click', () => {
 		is_grid_view = !is_grid_view;
