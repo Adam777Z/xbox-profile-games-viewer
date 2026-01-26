@@ -7,10 +7,12 @@
 }
 
 .btn-load:hover,
-.btn-reload:hover {
-	background-color: #0d5c0a;
-	border-color: #0d5c0a;
-	color: #fff;
+.btn-reload:hover,
+.btn-load:active,
+.btn-reload:active {
+	background-color: #0d5c0a !important;
+	border-color: #0d5c0a !important;
+	color: #fff !important;
 }
 
 /* Green spinner */
