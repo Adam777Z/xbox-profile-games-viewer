@@ -45,8 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
 			});
 			if (!response.ok) throw new Error('Network response was not ok');
 
-			const data = await response.json();
-			if (!data.titles || !Array.isArray(data.titles)) throw new Error('Invalid JSON structure');
+			const data = (await response.json()).content;
+
+			if (!data.titles || !Array.isArray(data.titles)) {
+				throw new Error('Invalid JSON structure');
+			}
 
 			full_data = data;
 			games_data = data.titles;
