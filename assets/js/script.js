@@ -1,12 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-	const load_btn = document.getElementById('load-btn');
+	const gamertag_loader = document.getElementById('gamertag-loader');
+
 	const reload_btn = document.getElementById('reload-btn');
 	const view_btn = document.getElementById('view-btn');
 
 	const save_btn = document.getElementById('save-btn');
 
-	const input_view = document.getElementById('input-view');
-	const games_view = document.getElementById('games-view');
+	const gamertag_input = document.getElementById('gamertag-input');
+	const games_section = document.getElementById('games-section');
 	const games_container = document.getElementById('games-container');
 
 	const error_box = document.getElementById('error-box');
@@ -14,73 +15,172 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	let full_data = null;
 	let games_data = null;
+	let current_gamertag = '';
+	let current_xuid = '';
 	let is_grid_view = false;
+
+	const xuid_cache = {};
 
 	const proxy_url = config['proxy_url'];
 	const api_key = config['api_key'];
-	const api_endpoint = 'https://xbl.io/api/v2/achievements';
 
-	const fetch_games = async () => {
+	const fetch_xbl_json = async (api_endpoint) => {
+		const response = await fetch('https://' + proxy_url + '/?url=' + encodeURIComponent(api_endpoint), {
+			headers: {
+				'accept': '*/*',
+				'x-authorization': api_key
+			}
+		});
+
+		if (!response.ok) {
+			throw new Error('Network response was not OK');
+		}
+
+		return await response.json();
+	};
+
+	const get_xuid_from_gamertag = async (gamertag) => {
+		const cache_key = gamertag.toLowerCase();
+
+		if (xuid_cache[cache_key]) {
+			return xuid_cache[cache_key];
+		}
+
+		const api_endpoint = 'https://api.xbl.io/v2/search/' + encodeURIComponent(gamertag);
+		const data = await fetch_xbl_json(api_endpoint);
+
+		const people = data && data.content && Array.isArray(data.content.people)
+			? data.content.people
+			: [];
+
+		if (!people.length) {
+			throw new Error('No player found for that gamertag');
+		}
+
+		const exact_match = people.find((person) => {
+			return person.gamertag && person.gamertag.toLowerCase() === gamertag.toLowerCase();
+		});
+
+		const player = exact_match || people[0];
+
+		if (!player.xuid) {
+			throw new Error('Player found, but XUID is missing');
+		}
+
+		xuid_cache[cache_key] = player.xuid;
+
+		return player.xuid;
+	};
+
+	const fetch_games_by_xuid = async (xuid) => {
+		const api_endpoint = 'https://api.xbl.io/v2/achievements/player/' + encodeURIComponent(xuid);
+		const data = (await fetch_xbl_json(api_endpoint)).content;
+
+		if (!data.titles || !Array.isArray(data.titles)) {
+			throw new Error('Invalid JSON structure');
+		}
+
+		full_data = data;
+		games_data = data.titles;
+
+		render_games(games_data);
+		update_container_classes();
+	};
+
+	const show_loading = () => {
 		error_box.classList.add('d-none');
 		games_container.innerHTML = '';
+		games_section.classList.remove('d-none');
 
-		// Hide load button immediately
-		input_view.classList.add('d-none');
-
-		// Show games container immediately
-		games_view.classList.remove('d-none');
-
-		// Show loading spinner
 		const spinner = document.createElement('div');
+		spinner.id = 'loading-spinner';
 		spinner.className = 'd-flex justify-content-center w-100 my-3';
 		spinner.innerHTML = `<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>`;
+
 		games_container.appendChild(spinner);
+	};
 
-		try {
-			const response = await fetch('https://' + proxy_url + '/?url=' + encodeURIComponent(api_endpoint), {
-				headers: {
-					'accept': '*/*',
-					'x-authorization': api_key
-				}
-			});
-			if (!response.ok) throw new Error('Network response was not ok');
+	const hide_loading = () => {
+		const spinner = document.getElementById('loading-spinner');
 
-			const data = (await response.json()).content;
-
-			if (!data.titles || !Array.isArray(data.titles)) {
-				throw new Error('Invalid JSON structure');
-			}
-
-			full_data = data;
-			games_data = data.titles;
-
-			render_games(games_data);
-			update_container_classes();
-		} catch (err) {
-			show_error(err.message);
-		} finally {
+		if (spinner) {
 			spinner.remove();
 		}
 	};
 
-	// Event listeners
-	load_btn.addEventListener('click', fetch_games);
-	reload_btn.addEventListener('click', fetch_games);
+	const fetch_games = async () => {
+		const gamertag = gamertag_input ? gamertag_input.value.trim() : '';
 
-	// Save JSON when requested
+		if (!gamertag) {
+			return;
+		}
+
+		show_loading();
+
+		try {
+			const xuid = await get_xuid_from_gamertag(gamertag);
+
+			current_gamertag = gamertag;
+			current_xuid = xuid;
+
+			await fetch_games_by_xuid(xuid);
+		} catch (err) {
+			show_error(err.message);
+		} finally {
+			hide_loading();
+		}
+	};
+
+	const reload_games = async () => {
+		if (!current_xuid) {
+			show_error('Load a Gamertag first');
+			return;
+		}
+
+		show_loading();
+
+		try {
+			await fetch_games_by_xuid(current_xuid);
+		} catch (err) {
+			show_error(err.message);
+		} finally {
+			hide_loading();
+		}
+	};
+
+	gamertag_loader.addEventListener('submit', (event) => {
+		event.preventDefault();
+		fetch_games();
+	});
+
+	reload_btn.addEventListener('click', reload_games);
+
 	const save_json = () => {
 		const data = full_data ? full_data : [];
 		const json = JSON.stringify(data, null, 2);
 		const iso = new Date().toISOString();
-		const filename = 'Xbox Achievements ' + formatDateUTC(iso).replace(/:/g, '-') + '.json';
+		const filename_parts = [];
+
+		filename_parts.push('Xbox Achievements');
+
+		if (current_gamertag) {
+			filename_parts.push(current_gamertag);
+		}
+
+		filename_parts.push(formatDateUTC(iso).replace(/:/g, '-'));
+
+		const filename = filename_parts.join(' ') + '.json';
 		const blob = new Blob([json], { type: 'application/json' });
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement('a');
+
 		a.href = url;
 		a.download = filename;
+
 		document.body.appendChild(a);
 		a.click();
 		a.remove();
+
 		URL.revokeObjectURL(url);
 	};
 
@@ -93,7 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		update_container_classes();
 	});
 
-	// Update container and card classes for current view
 	const update_container_classes = () => {
 		if (is_grid_view) {
 			games_container.className = 'row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3';
@@ -110,7 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	};
 
-	// Render games
 	const render_games = (games) => {
 		games_container.innerHTML = '';
 
@@ -171,7 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			games_container.appendChild(col);
 		});
 
-		// Ensure cards have correct classes after rendering
 		update_container_classes();
 	};
 

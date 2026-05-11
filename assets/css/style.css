@@ -1,3 +1,16 @@
+/* Gamertag input + Load button */
+.gamertag-load-wrapper {
+	display: flex;
+	justify-content: center;
+	gap: 0.5rem;
+	max-width: 360px;
+	margin: 0 auto;
+}
+
+#gamertag-input {
+	max-width: 240px;
+}
+
 /* Buttons in Xbox green */
 .btn-load,
 .btn-reload {
@@ -83,7 +96,7 @@
 	gap: 0.5rem;
 }
 
-/* Achievement percentage */
+/* Achievement percentage text above progress bar, right-aligned */
 .achievement-percentage {
 	margin-left: auto;
 }
@@ -107,9 +120,4 @@
 .achievement-trophy {
 	margin-left: 0.5rem;
 	margin-right: 0.25rem;
-}
-
-/* Percentage text above progress bar, right-aligned */
-.achievement-percentage {
-	margin-left: auto;
 }
