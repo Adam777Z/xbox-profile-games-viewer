@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
 	const gamertag_loader = document.getElementById('gamertag-loader');
+	const settings_toggle = document.getElementById('settings-toggle');
+	const settings_panel = document.getElementById('settings-panel');
+	const settings_form = document.getElementById('settings-form');
+	const proxy_url_input = document.getElementById('proxy-url-input');
+	const api_key_input = document.getElementById('api-key-input');
+	const settings_status = document.getElementById('settings-status');
 
 	const reload_btn = document.getElementById('reload-btn');
 	const view_btn = document.getElementById('view-btn');
@@ -18,14 +24,17 @@ document.addEventListener('DOMContentLoaded', () => {
 	let current_gamertag = '';
 	let current_xuid = '';
 	let is_grid_view = false;
+	let settings_status_timeout;
 
 	const xuid_cache = {};
 
-	const proxy_url = config['proxy_url'];
-	const api_key = config['api_key'];
+	let proxy_url = localStorage.getItem('proxy_url') || '';
+	let api_key = localStorage.getItem('api_key') || '';
+	proxy_url_input.value = proxy_url;
+	api_key_input.value = api_key;
 
 	const fetch_xbl_json = async (api_endpoint) => {
-		const response = await fetch('https://' + proxy_url + '/?url=' + encodeURIComponent(api_endpoint), {
+		const response = await fetch(proxy_url + '/?url=' + encodeURIComponent(api_endpoint), {
 			headers: {
 				'accept': '*/*',
 				'x-authorization': api_key
@@ -38,6 +47,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		return await response.json();
 	};
+
+	settings_toggle.addEventListener('click', () => {
+		const is_open = !settings_panel.classList.contains('d-none');
+		settings_panel.classList.toggle('d-none', is_open);
+		settings_toggle.setAttribute('aria-expanded', String(!is_open));
+	});
+
+	settings_form.addEventListener('submit', (event) => {
+		event.preventDefault();
+		proxy_url = proxy_url_input.value.trim();
+		api_key = api_key_input.value.trim();
+
+		if (!proxy_url || !api_key) {
+			return;
+		}
+
+		localStorage.setItem('proxy_url', proxy_url);
+		localStorage.setItem('api_key', api_key);
+		proxy_url_input.value = proxy_url;
+		settings_status.textContent = 'Saved';
+		clearTimeout(settings_status_timeout);
+		settings_status_timeout = setTimeout(() => {
+			settings_status.textContent = '';
+		}, 3000);
+	});
 
 	const get_xuid_from_gamertag = async (gamertag) => {
 		const cache_key = gamertag.toLowerCase();
@@ -243,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
 `;
 
 			const display_image = game.displayImage
-				? 'https://' + proxy_url + '/?url=' + encodeURIComponent(game.displayImage)
+				? proxy_url + '/?url=' + encodeURIComponent(game.displayImage)
 				: '';
 
 			const col = document.createElement('div');

@@ -1,10 +1,38 @@
 /* Gamertag input + Load button */
+.page-heading {
+	position: relative;
+}
+
+.page-heading h1 {
+	padding: 0 3rem;
+}
+
+.settings-toggle {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+.settings-panel {
+	max-width: 520px;
+	margin: 1rem auto;
+	padding: 1rem;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 0.375rem;
+}
+
 .gamertag-load-wrapper {
 	display: flex;
 	justify-content: center;
 	gap: 0.5rem;
 	max-width: 360px;
 	margin: 0 auto;
+}
+
+@media (max-width: 420px) {
+	.page-heading h1 {
+		padding: 0 2.5rem;
+	}
 }
 
 #gamertag-input {

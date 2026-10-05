@@ -10,7 +10,6 @@
 	<link rel="stylesheet" href="./assets/css/bootstrap-icons.min.css">
 	<link rel="stylesheet" href="./assets/css/style.min.css">
 
-	<script src="./config.js"></script>
 	<script src="./assets/js/script.min.js"></script>
 </head>
 <body>
@@ -18,9 +17,31 @@
 
 		<div class="row">
 			<div class="col mx-auto">
-				<h1 class="text-center">Xbox Profile Games Viewer</h1>
+				<div class="page-heading">
+					<h1 class="text-center">Xbox Profile Games Viewer</h1>
+					<button id="settings-toggle" class="btn btn-outline-secondary settings-toggle" type="button" aria-label="Settings" aria-expanded="false" aria-controls="settings-panel" title="Settings">
+						<i class="bi bi-gear-fill" aria-hidden="true"></i>
+					</button>
+				</div>
 			</div>
 		</div>
+
+		<section id="settings-panel" class="settings-panel d-none" aria-label="Settings">
+			<form id="settings-form">
+				<div class="mb-3">
+					<label for="proxy-url-input" class="form-label">Proxy URL</label>
+					<input id="proxy-url-input" name="proxy_url" type="text" class="form-control" autocomplete="url" placeholder="https://" required>
+				</div>
+				<div class="mb-3">
+					<label for="api-key-input" class="form-label">OpenXBL API key</label>
+					<input id="api-key-input" name="api_key" type="password" class="form-control" autocomplete="off" required>
+				</div>
+				<div class="d-flex align-items-center gap-3">
+					<button type="submit" class="btn btn-primary">Save settings</button>
+					<span id="settings-status" class="small text-success" role="status" aria-live="polite"></span>
+				</div>
+			</form>
+		</section>
 
 		<form id="gamertag-loader" class="text-center my-3">
 			<div class="gamertag-load-wrapper">
