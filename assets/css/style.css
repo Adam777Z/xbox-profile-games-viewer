@@ -4,13 +4,25 @@
 }
 
 .page-heading h1 {
-	padding: 0 3rem;
+	padding: 0 6rem;
 }
 
-.settings-toggle {
+.page-heading-right {
 	position: absolute;
 	top: 0;
 	right: 0;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.settings-toggle {
+	background-color: white;;
+}
+
+.github-link {
+	line-height: 1;
+	font-size: 2.5rem;
 }
 
 .settings-panel {
@@ -31,7 +43,11 @@
 
 @media (max-width: 420px) {
 	.page-heading h1 {
-		padding: 0 2.5rem;
+		padding: 0 4.5rem;
+	}
+
+	.github-link {
+		right: 2.5rem;
 	}
 }
 
