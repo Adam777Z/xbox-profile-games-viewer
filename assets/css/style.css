@@ -55,6 +55,12 @@
 	max-width: 240px;
 }
 
+#gamertag-input:focus,
+#gamertag-input:focus-visible {
+	border-color: #107C10;
+	box-shadow: 0 0 0 0.25rem rgba(16, 124, 16, 0.25);
+}
+
 /* Buttons in Xbox green */
 .btn-load,
 .btn-reload {
