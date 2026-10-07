@@ -279,6 +279,13 @@ document.addEventListener('DOMContentLoaded', () => {
 			const display_image = game.displayImage
 				? proxy_url + '/?url=' + encodeURIComponent(game.displayImage)
 				: '';
+			const image_html = display_image
+				? `<img src="${display_image}" class="list-img" alt="${ escape_html(name) }">`
+				: `
+<div class="list-img image-placeholder" aria-label="No image" role="img">
+	<i class="bi bi-image" aria-hidden="true"></i>
+	<span>No image</span>
+</div>`;
 
 			const col = document.createElement('div');
 			col.className = 'col';
@@ -286,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			col.innerHTML = `
 <div class="card shadow-sm">
 	<div class="d-flex align-items-start list-view-container p-2">
-		${ display_image ? `<img src="${display_image}" class="list-img" alt="">` : '' }
+		${ image_html }
 		<div class="card-body p-0">
 			<h5 class="card-title">${ escape_html(name) }</h5>
 			<ul class="list-unstyled mb-0">

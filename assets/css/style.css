@@ -107,9 +107,9 @@
 
 /* List view image */
 #games-container .card.list-view .list-img {
-	width: auto;
+	width: 120px;
 	height: 150px;
-	object-fit: fill;
+	object-fit: cover;
 	margin-right: 1rem;
 	border-radius: 6px;
 	box-shadow: 0 2px 6px rgba(0,0,0,0.15);
@@ -121,6 +121,39 @@
 	height: auto;
 	object-fit: contain;
 	margin-bottom: 0.5rem;
+}
+
+#games-container .card .image-placeholder {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+	background: linear-gradient(135deg, #f5f5f5, #ebebeb);
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	border-radius: 6px;
+	color: #6c757d;
+	font-size: 0.8rem;
+	font-weight: 600;
+	text-align: center;
+	box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+#games-container .card .image-placeholder i {
+	font-size: 2rem;
+	line-height: 1;
+}
+
+#games-container .card.list-view .image-placeholder {
+	width: 120px;
+	height: 150px;
+}
+
+#games-container .card:not(.list-view) .image-placeholder {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 4 / 3;
+	min-height: 180px;
 }
 
 /* Grid view flex reset */
