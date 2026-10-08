@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	const view_btn = document.getElementById('view-btn');
 
 	const save_btn = document.getElementById('save-btn');
+	const load_json_btn = document.getElementById('load-json-btn');
+	const json_file_input = document.getElementById('json-file-input');
 
 	const gamertag_input = document.getElementById('gamertag-input');
 	const games_section = document.getElementById('games-section');
@@ -190,8 +192,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	reload_btn.addEventListener('click', reload_games);
 
 	const save_json = () => {
-		const data = full_data ? full_data : [];
-		const json = JSON.stringify(data, null, 2);
+		const payload = {
+			xuid: current_xuid || '',
+			gamertag: current_gamertag || '',
+			titles: Array.isArray(full_data && full_data.titles) ? full_data.titles : []
+		};
+		const json = JSON.stringify(payload, null, 2);
 		const iso = new Date().toISOString();
 		const filename_parts = [];
 
@@ -218,8 +224,71 @@ document.addEventListener('DOMContentLoaded', () => {
 		URL.revokeObjectURL(url);
 	};
 
+	const load_json_file = async (file) => {
+		if (!file) {
+			return;
+		}
+
+		show_loading();
+
+		try {
+			const parsed = JSON.parse(await file.text());
+			const saved_xuid = parsed && parsed.xuid ? String(parsed.xuid) : '';
+			const saved_gamertag = parsed && parsed.gamertag ? String(parsed.gamertag) : '';
+			const title_data = Array.isArray(parsed && parsed.titles) ? parsed.titles : [];
+
+			if (!saved_xuid) {
+				throw new Error('This JSON file does not contain an XUID.');
+			}
+
+			if (!saved_gamertag) {
+				throw new Error('This JSON file does not contain a gamertag.');
+			}
+
+			if (!Array.isArray(title_data) || !title_data.length) {
+				throw new Error('This JSON file does not contain any game data.');
+			}
+
+			current_xuid = saved_xuid;
+			current_gamertag = saved_gamertag;
+			gamertag_input.value = saved_gamertag;
+			full_data = { titles: title_data };
+			games_data = title_data;
+
+			render_games(games_data);
+			update_container_classes();
+			games_section.classList.remove('d-none');
+			error_box.classList.add('d-none');
+		} catch (err) {
+			show_error(err.message);
+		} finally {
+			hide_loading();
+		}
+	};
+
 	if (save_btn) {
 		save_btn.addEventListener('click', save_json);
+	}
+
+	if (load_json_btn) {
+		load_json_btn.addEventListener('click', () => {
+			if (json_file_input) {
+				json_file_input.click();
+			}
+		});
+	}
+
+	if (json_file_input) {
+		json_file_input.addEventListener('change', (event) => {
+			const file = event.target.files && event.target.files[0];
+
+			if (!file) {
+				return;
+			}
+
+			load_json_file(file);
+			json_file_input.value = '';
+		});
 	}
 
 	view_btn.addEventListener('click', () => {

@@ -36,8 +36,10 @@
 .gamertag-load-wrapper {
 	display: flex;
 	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
 	gap: 0.5rem;
-	max-width: 360px;
+	max-width: 500px;
 	margin: 0 auto;
 }
 
@@ -52,7 +54,11 @@
 }
 
 #gamertag-input {
-	max-width: 240px;
+	max-width: 220px;
+}
+
+#load-json-btn {
+	white-space: nowrap;
 }
 
 #gamertag-input:focus,
