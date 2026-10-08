@@ -284,7 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
 				: `
 <div class="list-img image-placeholder" aria-label="No image" role="img">
 	<i class="bi bi-image" aria-hidden="true"></i>
-	<span>No image</span>
 </div>`;
 
 			const col = document.createElement('div');
