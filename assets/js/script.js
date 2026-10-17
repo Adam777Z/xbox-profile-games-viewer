@@ -42,12 +42,13 @@ document.addEventListener('DOMContentLoaded', () => {
 				'x-authorization': api_key
 			}
 		});
+		const data = await response.json();
 
-		if (!response.ok) {
-			throw new Error('Network response was not OK');
+		if (!response.ok || (data && data.code === 'ERROR')) {
+			throw new Error(data && data.message ? data.message : 'Network response was not OK');
 		}
 
-		return await response.json();
+		return data;
 	};
 
 	settings_toggle.addEventListener('click', () => {
@@ -148,6 +149,21 @@ document.addEventListener('DOMContentLoaded', () => {
 		const gamertag = gamertag_input ? gamertag_input.value.trim() : '';
 
 		if (!gamertag) {
+			return;
+		}
+
+		const missing_settings = [];
+
+		if (!proxy_url) {
+			missing_settings.push('Proxy URL');
+		}
+
+		if (!api_key) {
+			missing_settings.push('OpenXBL API key');
+		}
+
+		if (missing_settings.length) {
+			show_error('Settings required: ' + missing_settings.join(' and ') + '.');
 			return;
 		}
 
